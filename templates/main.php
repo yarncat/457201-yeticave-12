@@ -27,8 +27,8 @@
                             <span class="lot__amount">Стартовая цена</span>
                             <span class="lot__cost"><?=formatSum(htmlspecialchars($value['price'])); ?></span>
                         </div>
-                        <div class="lot__timer timer">
-                            12:23
+                        <div class="lot__timer timer <?php if(getDateRange($value['findate'])[0] == '00'): ?>timer--finishing<?php endif; ?>">
+                            <?=implode(":", getDateRange($value['findate'])); ?>
                         </div>
                     </div>
                 </div>
