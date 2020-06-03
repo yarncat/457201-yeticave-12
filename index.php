@@ -3,52 +3,28 @@ $is_auth = rand(0, 1);
 
 $user_name = 'Александр';
 
-$itemCategory = ['Доски и лыжи', 'Крепления', 'Ботинки', 'Одежда', 'Инструменты', 'Разное'];
+$con = mysqli_connect("localhost", "root", "_caberne55_S", "yeticave");
+mysqli_set_charset($con, "utf8");
 
-$items = [
-    [
-        'title' => '2014 Rossignol District Snowboard',
-        'category' => 'Доски и лыжи',
-        'price' => '10999',
-        'imageurl' => 'img/lot-1.jpg',
-        'findate' => '2020-05-01'
-    ],
-    [
-        'title' => 'DC Ply Mens 2016/2017 Snowboard',
-        'category' => 'Доски и лыжи',
-        'price' => '159999',
-        'imageurl' => 'img/lot-2.jpg',
-        'findate' => '2020-05-02'
-    ],
-    [
-        'title' => 'Крепления Union Contact Pro 2015 года размер L/XL',
-        'category' => 'Крепления',
-        'price' => '8000',
-        'imageurl' => 'img/lot-3.jpg',
-        'findate' => '2020-05-03'
-    ],
-    [
-        'title' => 'Ботинки для сноуборда DC Mutiny Charocal',
-        'category' => 'Ботинки',
-        'price' => '10999',
-        'imageurl' => 'img/lot-4.jpg',
-        'findate' => '2020-05-04'
-    ],
-    [
-        'title' => 'Куртка для сноуборда DC Mutiny Charocal',
-        'category' => 'Одежда',
-        'price' => '7500',
-        'imageurl' => 'img/lot-5.jpg',
-        'findate' => '2020-05-05'
-    ],
-    [
-        'title' => 'Маска Oakley Canopy',
-        'category' => 'Разное',
-        'price' => '5400',
-        'imageurl' => 'img/lot-6.jpg',
-        'findate' => '2020-05-06'
-    ]
-];
+if ($con) {
+    $sqlCat = 'SELECT * FROM Categories';
+    if ($result = mysqli_query($con, $sqlCat)) {
+        $categories = mysqli_fetch_all($result, MYSQLI_ASSOC);
+    }
+    $sqlLot = 'SELECT lot_name, image_link, start_price, rate, final_date, Lots.id, category
+                 FROM Lots
+                      LEFT JOIN
+                        (SELECT lot_id, date_rate, MAX(rate) AS rate
+                           FROM Rates
+                          GROUP BY lot_id) Rates
+                             ON Lots.id = Rates.lot_id
+                      LEFT JOIN Categories
+                             ON Lots.cat_code = Categories.id
+                ORDER BY create_date DESC';
+    if ($result = mysqli_query($con, $sqlLot)) {
+        $items = mysqli_fetch_all($result, MYSQLI_ASSOC);
+    }
+}
 
 function formatSum ($price)
 {
@@ -87,14 +63,14 @@ function getDateRange($findate)
     return $arr;
 }
 
-$pageContent = include_template('main.php', ['itemCategory' => $itemCategory, 'items' => $items]);
+$pageContent = include_template('main.php', ['categories' => $categories, 'items' => $items]);
 
 $layout_content = include_template('layout.php', [
     'title' => 'Главная',
     'is_auth' => $is_auth,
     'user_name' => $user_name,
-    'content' => $pageContent,
-    'itemCategory' => $itemCategory
+    'content' => $pageContent, 
+	'categories' => $categories
 ]);
 
 print($layout_content);
