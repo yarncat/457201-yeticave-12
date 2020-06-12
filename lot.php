@@ -11,51 +11,46 @@ if ($con) {
     if ($result = mysqli_query($con, $sqlCat)) {
         $categories = mysqli_fetch_all($result, MYSQLI_ASSOC);
     }
-    $sqlLot = 'SELECT lot_name, image_link, start_price, final_date, rate, count, Lots.id, category
-                 FROM Lots
-                      LEFT JOIN
-                        (SELECT lot_id, date_rate, count(rate) AS count, MAX(rate) AS rate
-                           FROM Rates
-                          GROUP BY lot_id) Rates
-                             ON Lots.id = Rates.lot_id
-                      LEFT JOIN Categories
-                             ON Lots.cat_code = Categories.id
-                WHERE final_date > now()
-                ORDER BY create_date DESC';
-    if ($result = mysqli_query($con, $sqlLot)) {
+
+    $sqlLotInfo = 'SELECT lot_name, image_link, rate, final_date, start_price, Lots.id, lot_info, step_rate, category
+                     FROM Lots
+                          LEFT JOIN
+                            (SELECT lot_id, MAX(rate) AS rate
+                               FROM Rates
+                              GROUP BY lot_id) Rates
+                                 ON Lots.id = Rates.lot_id
+                          LEFT JOIN Categories
+                                 ON Lots.cat_code = Categories.id';
+
+    if ($result = mysqli_query($con, $sqlLotInfo)) {
         $items = mysqli_fetch_all($result, MYSQLI_ASSOC);
+    }
+
+    $lot = null;
+
+    if (isset($_GET['id'])) {
+        $lot = $_GET['id'];
+        foreach ($items as $item) {
+            if ($lot === $item['id']) {
+                $lot = $item;
+                break;
+            }
+        }
+        if (!is_array($lot)) {
+            $lot = null;
+        }
+    }
+
+    if (!$lot) {
+        http_response_code(404);
     }
 }
 
 function formatSum ($price)
 {
     $roundSum = ceil($price);
-    $result = number_format($roundSum, 0, ",", " ") . " ₽";
+    $result = number_format($roundSum, 0, ",", " ");
     return $result;
-}
-
-function get_noun_plural_form (int $number, string $one, string $two, string $many): string
-{
-    $number = (int) $number;
-    $mod10 = $number % 10;
-    $mod100 = $number % 100;
-
-    switch (true) {
-        case ($mod100 >= 11 && $mod100 <= 20):
-            return $many;
-
-        case ($mod10 > 5):
-            return $many;
-
-        case ($mod10 === 1):
-            return $one;
-
-        case ($mod10 >= 2 && $mod10 <= 4):
-            return $two;
-
-        default:
-            return $many;
-    }
 }
 
 function include_template($name, array $data = [])
@@ -88,7 +83,9 @@ function getDateRange($findate)
     return $arr;
 }
 
-$pageContent = include_template('main.php', ['categories' => $categories, 'items' => $items]);
+$pageContent = include_template('lotinfo.php', [
+    'categories' => $categories,
+    'lot' => $lot]);
 
 $layout_content = include_template('layout.php', [
     'title' => 'Главная',
