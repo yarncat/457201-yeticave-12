@@ -5,7 +5,7 @@
       <ul class="promo__list">
       <?php foreach ($categories as $cat): ?>
         <li class="promo__item promo__item--<?=$cat['code']; ?>">
-          <a class="promo__link" href="pages/<?= $cat['id']; ?>"><?=htmlspecialchars($cat['category']); ?></a>
+          <a class="promo__link" href="pages/<?=$cat['id']; ?>"><?=htmlspecialchars($cat['category']); ?></a>
         </li>
       <?php endforeach; ?>
       </ul>
@@ -33,7 +33,7 @@
                 <span class="lot__cost"><?=formatSum(htmlspecialchars($item['start_price'])); ?></span>
               <?php endif; ?>
               </div>
-              <div class="lot__timer timer <?php if(getDateRange($item['final_date'])[0] == '00'): ?>timer--finishing<?php endif; ?>">
+              <div class="lot__timer timer <?=getDateRange($item['final_date'])[0] == '00' ? "timer--finishing" : ""; ?>">
                 <?=implode(":", getDateRange($item['final_date'])); ?>
               </div>
             </div>
