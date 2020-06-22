@@ -3,7 +3,7 @@
       <ul class="nav__list container">   
       <?php foreach ($categories as $cat): ?>
         <li class="nav__item">
-          <a href="pages/<?= $cat['id']; ?>"><?=htmlspecialchars($cat['category']); ?></a>
+          <a href="pages/<?=$cat['id']; ?>"><?=htmlspecialchars($cat['category']); ?></a>
         </li>
       <?php endforeach; ?>
       </ul>
@@ -21,7 +21,7 @@
           </div>
           <div class="lot-item__right">
             <div class="lot-item__state">
-              <div class="lot-item__timer timer <?php if(getDateRange($lot['final_date'])[0] == '00'): ?>timer--finishing<?php endif; ?>">
+              <div class="lot-item__timer timer <?=getDateRange($lot['final_date'])[0] == '00' ? "timer--finishing" : ""; ?>">
                 <?=implode(":", getDateRange($lot['final_date'])); ?>
               </div>
               <div class="lot-item__cost-state">

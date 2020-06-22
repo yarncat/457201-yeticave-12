@@ -33,11 +33,13 @@ if ($con) {
         foreach ($items as $item) {
             if ($lot === $item['id']) {
                 $lot = $item;
+				$title = $item['lot_name'];
                 break;
             }
         }
         if (!is_array($lot)) {
             $lot = null;
+			$title = '404';
         }
     }
 
@@ -88,7 +90,7 @@ $pageContent = include_template('lotinfo.php', [
     'lot' => $lot]);
 
 $layout_content = include_template('layout.php', [
-    'title' => 'Главная',
+    'title' => $title,
     'is_auth' => $is_auth,
     'user_name' => $user_name,
     'content' => $pageContent, 
@@ -96,4 +98,3 @@ $layout_content = include_template('layout.php', [
 ]);
 
 print($layout_content);
-?>
