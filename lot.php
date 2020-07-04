@@ -1,4 +1,7 @@
 <?php
+
+require_once 'functions.php';
+
 $is_auth = rand(0, 1);
 
 $user_name = 'Александр';
@@ -33,56 +36,19 @@ if ($con) {
         foreach ($items as $item) {
             if ($lot === $item['id']) {
                 $lot = $item;
-				$title = $item['lot_name'];
+                $title = $item['lot_name'];
                 break;
             }
         }
         if (!is_array($lot)) {
             $lot = null;
-			$title = '404';
+            $title = '404';
         }
     }
 
     if (!$lot) {
         http_response_code(404);
     }
-}
-
-function formatSum ($price)
-{
-    $roundSum = ceil($price);
-    $result = number_format($roundSum, 0, ",", " ");
-    return $result;
-}
-
-function include_template($name, array $data = [])
-{
-    $name = 'templates/' . $name;
-    $result = '';
-
-    if (!is_readable($name)) {
-        return $result;
-    }
-
-    ob_start();
-    extract($data);
-    require $name;
-
-    $result = ob_get_clean();
-
-    return $result;
-}
-
-function getDateRange($findate)
-{
-    $endDate = strtotime($findate);
-    $nowDate = strtotime('now');
-    $diffDate = $endDate - $nowDate;
-    $hours = intval($diffDate / 3600);
-    $arr[] = str_pad($hours, 2, "0", STR_PAD_LEFT);
-    $minutes = intval(($diffDate % 3600) / 60);
-    $arr[] = str_pad($minutes, 2, "0", STR_PAD_LEFT);
-    return $arr;
 }
 
 $pageContent = include_template('lotinfo.php', [
@@ -93,7 +59,7 @@ $layout_content = include_template('layout.php', [
     'title' => $title,
     'is_auth' => $is_auth,
     'user_name' => $user_name,
-    'content' => $pageContent, 
+    'content' => $pageContent,
     'categories' => $categories
 ]);
 

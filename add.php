@@ -1,4 +1,7 @@
 <?php
+
+require_once 'functions.php';
+
 $is_auth = rand(0, 1);
 
 $user_name = 'Александр';
@@ -13,95 +16,9 @@ if ($con) {
     }
 }
 
-function include_template($name, array $data = [])
-{
-    $name = 'templates/' . $name;
-    $result = '';
-
-    if (!is_readable($name)) {
-        return $result;
-    }
-
-    ob_start();
-    extract($data);
-    require $name;
-
-    $result = ob_get_clean();
-
-    return $result;
-}
-
-function getPostVal($name)
-{
-    return $_POST[$name] ?? "";
-}
-
-function db_get_prepare_stmt($con, $sql, $data = [])
-{
-    $stmt = mysqli_prepare($con, $sql);
-
-    if ($stmt === false) {
-        $errorMsg = 'Не удалось инициализировать подготовленное выражение: ' . mysqli_error($con);
-        die($errorMsg);
-    }
-
-    if ($data) {
-        $types = '';
-        $stmt_data = [];
-
-        foreach ($data as $value) {
-            $type = 's';
-
-            if (is_int($value)) {
-                $type = 'i';
-            }
-            else if (is_string($value)) {
-                $type = 's';
-            }
-            else if (is_double($value)) {
-                $type = 'd';
-            }
-
-            if ($type) {
-                $types .= $type;
-                $stmt_data[] = $value;
-            }
-        }
-
-        $values = array_merge([$stmt, $types], $stmt_data);
-
-        $func = 'mysqli_stmt_bind_param';
-        $func(...$values);
-
-        if (mysqli_errno($con) > 0) {
-            $errorMsg = 'Не удалось связать подготовленное выражение с параметрами: ' . mysqli_error($con);
-            die($errorMsg);
-        }
-    }
-
-    return $stmt;
-}
-
-function is_date_valid(string $date) : bool
-{
-    $format_to_check = 'Y-m-d';
-    $dateTimeObj = date_create_from_format($format_to_check, $date);
-    if($dateTimeObj !== false && array_sum(date_get_last_errors()) === 0) {
-      $endTime = (strtotime($date) - strtotime('now')) / 86400;
-      if ($endTime < 1) {
-        return false;
-      } else {
-        return true;
-      }
-    } else {
-      return false;
-    }
-}
-
 $errors = [];
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-
     $lot = $_POST;
     $required = ['lot_name', 'category', 'message', 'lot_rate', 'lot_step', 'lot_date'];
 
@@ -164,12 +81,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         if ($res) {
             $lot_id = mysqli_insert_id($con);
             header("Location: lot.php?id=" . $lot_id);
-
         } else {
             print(mysqli_error($con));
         }
     }
-
 } else {
     $pageContent = include_template('addlot.php', ['categories' => $categories]);
 }
