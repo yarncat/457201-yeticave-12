@@ -8,7 +8,7 @@
       <?php endforeach; ?>
       </ul>
     </nav>
-    <form class="form container <?=isset($errors) ? "form--invalid" : ""; ?>" action="signup.php" method="post" autocomplete="off" method="POST" enctype="multipart/form-data">
+    <form class="form container <?=isset($errors) ? "form--invalid" : ""; ?>" action="signup.php" autocomplete="off" method="POST" enctype="multipart/form-data">
       <h2>Регистрация нового аккаунта</h2>
       <div class="form__item <?=isset($errors['email']) ? "form__item--invalid" : ""; ?>">
         <label for="email">E-mail <sup>*</sup></label>

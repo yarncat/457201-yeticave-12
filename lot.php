@@ -1,20 +1,13 @@
 <?php
 
+require_once 'init.php';
 require_once 'functions.php';
 
-$is_auth = rand(0, 1);
-
-$user_name = 'Александр';
-
-$con = mysqli_connect("localhost", "root", "_caberne55_S", "yeticave");
-mysqli_set_charset($con, "utf8");
+if (isset($_SESSION['user'])) {
+    $user_name = $_SESSION['user']['user_name'];
+}
 
 if ($con) {
-    $sqlCat = 'SELECT * FROM Categories';
-    if ($result = mysqli_query($con, $sqlCat)) {
-        $categories = mysqli_fetch_all($result, MYSQLI_ASSOC);
-    }
-
     $sqlLotInfo = 'SELECT lot_name, image_link, rate, final_date, start_price, Lots.id, lot_info, step_rate, category
                      FROM Lots
                           LEFT JOIN
@@ -51,13 +44,25 @@ if ($con) {
     }
 }
 
-$pageContent = include_template('lotinfo.php', [
-    'categories' => $categories,
-    'lot' => $lot]);
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    $required = ['cost'];
+    foreach ($required as $field) {
+        if (empty($required[$field])) {
+            $errors[$field] = 'Поле не заполнено';
+        }
+    }
+    $pageContent = include_template('lotinfo.php', [
+        'errors' => $errors,
+        'categories' => $categories,
+        'lot' => $lot]);
+} else {
+    $pageContent = include_template('lotinfo.php', [
+        'categories' => $categories,
+        'lot' => $lot]);
+}
 
 $layout_content = include_template('layout.php', [
     'title' => $title,
-    'is_auth' => $is_auth,
     'user_name' => $user_name,
     'content' => $pageContent,
     'categories' => $categories
