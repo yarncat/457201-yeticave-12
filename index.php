@@ -1,19 +1,13 @@
 <?php
 
+require_once 'init.php';
 require_once 'functions.php';
 
-$is_auth = rand(0, 1);
-
-$user_name = 'Александр';
-
-$con = mysqli_connect("localhost", "root", "_caberne55_S", "yeticave");
-mysqli_set_charset($con, "utf8");
+if (isset($_SESSION['user'])) {
+    $user_name = $_SESSION['user']['user_name'];
+}
 
 if ($con) {
-    $sqlCat = 'SELECT * FROM Categories';
-    if ($result = mysqli_query($con, $sqlCat)) {
-        $categories = mysqli_fetch_all($result, MYSQLI_ASSOC);
-    }
     $sqlLot = 'SELECT lot_name, image_link, start_price, final_date, rate, count, Lots.id, category
                  FROM Lots
                       LEFT JOIN
@@ -34,7 +28,6 @@ $pageContent = include_template('main.php', ['categories' => $categories, 'items
 
 $layout_content = include_template('layout.php', [
     'title' => 'Главная',
-    'is_auth' => $is_auth,
     'user_name' => $user_name,
     'content' => $pageContent,
     'categories' => $categories
