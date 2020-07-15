@@ -29,6 +29,8 @@ CREATE TABLE Lots (
     FOREIGN KEY (winner)   REFERENCES Users(id),
     FOREIGN KEY (cat_code) REFERENCES Categories(id),
 
+    FULLTEXT KEY flt_ix_lot_name_info (lot_name, lot_info),
+
     INDEX ix_lot_name (lot_name),
     INDEX ix_create_date (create_date),
     INDEX ix_start_price (start_price),
