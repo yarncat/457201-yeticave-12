@@ -1,7 +1,8 @@
 <?php
 
 require_once 'init.php';
-require_once 'functions.php';
+
+$title = 'Регистрация';
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $signup = $_POST;
@@ -16,10 +17,14 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     if ($signup['email'] && !filter_var($signup['email'], FILTER_VALIDATE_EMAIL)) {
         $errors['email'] = 'Введите корректный email';
     } else {
-        $email = mysqli_real_escape_string($con, $signup['email']);
-        $sql = "SELECT id FROM users WHERE user_email = '$email'";
-        $res = mysqli_query($con, $sql);
-        if (mysqli_num_rows($res) > 0) {
+        $email = mysqli_real_escape_string($connect, $signup['email']);
+
+        $sqlUserEmail = "SELECT id
+                           FROM users
+                          WHERE user_email = '$email'";
+
+        $result = mysqli_query($connect, $sqlUserEmail);
+        if (mysqli_num_rows($result) > 0) {
             $errors['email'] = 'Пользователь с этим email уже зарегистрирован';
         }
     }
@@ -41,30 +46,29 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     }
 
     if (count($errors)) {
-        $pageContent = include_template('sign-up.php', [
-            'errors' => $errors,
-            'categories' => $categories]);
+        $pageContent = include_template('signup.php', ['menu' => $menu, 'errors' => $errors]);
     } else {
-        $sql = 'INSERT INTO users (user_email, user_password, user_name, user_contacts)
-                     VALUES (?, ?, ?, ?)';
-        $stmt = db_get_prepare_stmt($con, $sql, $signup);
-        $res = mysqli_stmt_execute($stmt);
+        $sqlNewUser = 'INSERT INTO users (user_email, user_password, user_name, user_contacts)
+                       VALUES (?, ?, ?, ?)';
 
-        if ($res) {
+        $stmt = db_get_prepare_stmt($connect, $sqlNewUser, $signup);
+        $result = mysqli_stmt_execute($stmt);
+
+        if ($result) {
             header("Location: login.php");
         } else {
-            print(mysqli_error($con));
+            print(mysqli_error($connect));
         }
     }
 } else {
-    $pageContent = include_template('sign-up.php', ['categories' => $categories]);
+    $pageContent = include_template('signup.php', ['menu' => $menu]);
 }
 
-$layout_content = include_template('layout.php', [
-    'title' => 'Регистрация',
-    'user_name' => $user_name,
-    'content' => $pageContent,
-    'categories' => $categories
+$layoutContent = include_template('layout.php', [
+    'menu' => $menu,
+    'title' => $title,
+    'userName' => $userName,
+    'content' => $pageContent
 ]);
 
-print($layout_content);
+print($layoutContent);

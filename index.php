@@ -1,36 +1,35 @@
 <?php
 
 require_once 'init.php';
-require_once 'functions.php';
 
-if (isset($_SESSION['user'])) {
-    $user_name = $_SESSION['user']['user_name'];
-}
+$title = 'Главная';
 
-if ($con) {
-    $sqlLot = 'SELECT lot_name, image_link, start_price, final_date, rate, count, Lots.id, category
-                 FROM Lots
-                      LEFT JOIN
-                        (SELECT lot_id, date_rate, count(rate) AS count, MAX(rate) AS rate
-                           FROM Rates
-                          GROUP BY lot_id) Rates
-                             ON Lots.id = Rates.lot_id
-                      LEFT JOIN Categories
-                             ON Lots.cat_code = Categories.id
-                WHERE final_date > now()
-                ORDER BY create_date DESC';
-    if ($result = mysqli_query($con, $sqlLot)) {
-        $items = mysqli_fetch_all($result, MYSQLI_ASSOC);
-    }
-}
+$notFound = 'Активных лотов на данный момент нет';
 
-$pageContent = include_template('main.php', ['categories' => $categories, 'items' => $items]);
+$sqlLots = 'SELECT Lots.id, lot_name, image_link, start_price, final_date, rate, count, category
+              FROM Lots
+                   LEFT JOIN
+                     (SELECT lot_id, date_rate, count(rate) AS count, MAX(rate) AS rate
+                        FROM Rates
+                       GROUP BY lot_id) Rates
+                          ON Lots.id = Rates.lot_id
+                   LEFT JOIN Categories
+                          ON Lots.cat_code = Categories.id
+             WHERE final_date > now()
+             ORDER BY create_date DESC';
 
-$layout_content = include_template('layout.php', [
-    'title' => 'Главная',
-    'user_name' => $user_name,
-    'content' => $pageContent,
-    'categories' => $categories
+$result = mysqli_query($connect, $sqlLots);
+$items = mysqli_fetch_all($result, MYSQLI_ASSOC);
+
+$lots = include_template('lots.php', ['items' => $items, 'notFound' => $notFound]);
+
+$pageContent = include_template('main.php', ['categories' => $categories, 'lots' => $lots]);
+
+$layoutContent = include_template('layout.php', [
+    'menu' => $menu,
+    'title' => $title,
+    'userName' => $userName,
+    'content' => $pageContent
 ]);
 
-print($layout_content);
+print($layoutContent);

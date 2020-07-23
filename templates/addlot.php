@@ -1,13 +1,5 @@
   <main>
-    <nav class="nav">
-      <ul class="nav__list container">
-      <?php foreach ($categories as $cat): ?>
-        <li class="nav__item">
-          <a href="pages/<?=$cat['id']; ?>"><?=$cat['category']; ?></a>
-        </li>
-      <?php endforeach; ?>
-      </ul>
-    </nav>
+  <?=$menu; ?>
     <form class="form form--add-lot container <?=isset($errors) ? "form--invalid" : ""; ?>" action="add.php" method="POST" enctype="multipart/form-data">
       <h2>Добавление лота</h2>
       <div class="form__container-two">
@@ -20,8 +12,8 @@
           <label for="category">Категория <sup>*</sup></label>
           <select id="category" name="category">
             <option disabled selected>Выберите категорию</option>
-            <?php foreach ($categories as $cat): ?>
-            <option value="<?=$cat['id'] ?>" <?=$cat['id'] === getPostVal('category') ? "selected" : ""; ?>><?=htmlspecialchars($cat['category']); ?></option>
+            <?php foreach ($categories as $category): ?>
+            <option value="<?=$category['id'] ?>" <?=$category['id'] === getPostVal('category') ? "selected" : ""; ?>><?=htmlspecialchars($category['category']); ?></option>
             <?php endforeach; ?>
           </select>
           <span class="form__error"><?=$errors['category']; ?></span>
