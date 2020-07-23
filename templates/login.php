@@ -1,13 +1,5 @@
   <main>
-    <nav class="nav">
-      <ul class="nav__list container">
-      <?php foreach ($categories as $cat): ?>
-        <li class="nav__item">
-          <a href="pages/<?=$cat['id']; ?>"><?=$cat['category']; ?></a>
-        </li>
-      <?php endforeach; ?>
-      </ul>
-    </nav>
+    <?=$menu; ?>
     <form class="form container <?=isset($errors) ? "form--invalid" : ""; ?>" action="login.php" method="POST" enctype="multipart/form-data">
       <h2>Вход</h2>
       <div class="form__item <?=isset($errors['email']) ? "form__item--invalid" : ""; ?>">

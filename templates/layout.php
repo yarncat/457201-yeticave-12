@@ -24,8 +24,8 @@
       <nav class="user-menu">
       <?php if (isset($_SESSION['user'])): ?>
         <div class="user-menu__logged">
-          <p><?=$user_name; ?></p>
-          <a class="user-menu__bets" href="pages/my-bets.html">Мои ставки</a>
+          <p><?=$userName; ?></p>
+          <a class="user-menu__bets" href="mybets.php">Мои ставки</a>
           <a class="user-menu__logout" href="logout.php">Выход</a>
         </div>
       <?php else: ?>
@@ -42,20 +42,12 @@
     </div>
   </header>
 
-  <?=$content; ?>
+<?=$content; ?>
 
 </div>
 
 <footer class="main-footer">
-  <nav class="nav">
-    <ul class="nav__list container">
-    <?php foreach ($categories as $cat): ?>
-      <li class="nav__item">
-        <a href="pages/<?=$cat['id']; ?>"><?=$cat['category']; ?></a>
-      </li>
-    <?php endforeach; ?>
-    </ul>
-  </nav>
+  <?=$menu; ?>
   <div class="main-footer__bottom container">
     <div class="main-footer__copyright">
       <p>© 2019, YetiCave</p>

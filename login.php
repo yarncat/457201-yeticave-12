@@ -1,7 +1,8 @@
 <?php
 
 require_once 'init.php';
-require_once 'functions.php';
+
+$title = 'Авторизация';
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $login = $_POST;
@@ -13,10 +14,14 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         }
     }
 
-    $email = mysqli_real_escape_string($con, $login['email']);
-    $sql = "SELECT * FROM users WHERE user_email = '$email'";
-    $res = mysqli_query($con, $sql);
-    $user = $res ? mysqli_fetch_array($res, MYSQLI_ASSOC) : null;
+    $email = mysqli_real_escape_string($connect, $login['email']);
+
+    $sqlUserEmail = "SELECT *
+                       FROM users
+                      WHERE user_email = '$email'";
+
+    $result = mysqli_query($connect, $sqlUserEmail);
+    $user = $result ? mysqli_fetch_assoc($result) : null;
 
     if (!count($errors) && $user) {
         if (password_verify($login['password'], $user['user_password'])) {
@@ -25,32 +30,27 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         } else {
             $errors['password'] = 'Неверный пароль';
         }
+    } elseif (empty($login['email'])) {
+        $errors['email'] = 'Поле не заполнено';
     } else {
         $errors['email'] = 'Такой пользователь не найден';
     }
 
     if (count($errors)) {
-        $pageContent = include_template('login.php', [
-            'errors' => $errors,
-            'categories' => $categories]);
+        $pageContent = include_template('login.php', ['menu' => $menu, 'errors' => $errors]);
     } else {
-        header("Location: /index.php");
+        header("Location: /");
         exit();
     }
 } else {
-    $pageContent = include_template('login.php', ['categories' => $categories]);
-
-    if (isset($_SESSION['user'])) {
-        header("Location: /index.php");
-        exit();
-    }
+    $pageContent = include_template('login.php', ['menu' => $menu]);
 }
 
-$layout_content = include_template('layout.php', [
-    'title' => 'Авторизация',
-    'user_name' => $user_name,
-    'content' => $pageContent,
-    'categories' => $categories
+$layoutContent = include_template('layout.php', [
+    'menu' => $menu,
+    'title' => $title,
+    'userName' => $userName,
+    'content' => $pageContent
 ]);
 
-print($layout_content);
+print($layoutContent);
