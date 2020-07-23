@@ -67,10 +67,10 @@ function db_get_prepare_stmt($con, $sql, $data = [])
     return $stmt;
 }
 
-function formatSum($price)
+function formatSum($price, $rubleSign = "")
 {
     $roundSum = ceil($price);
-    $result = number_format($roundSum, 0, ",", " ");
+    $result = number_format($roundSum, 0, ",", " ") . $rubleSign;
     return $result;
 }
 
@@ -107,6 +107,32 @@ function get_noun_plural_form(int $number, string $one, string $two, string $man
 
         default:
             return $many;
+    }
+}
+
+function getDifferenceTime($date)
+{
+    $dateNow = date("Y-m-d H:i:s");
+    $today = date_create($dateNow);
+    $dateRate = date_create($date);
+    $result = date_diff($today, $dateRate);
+    $days = $result->format('%d');
+    $hours = $result->format('%h');
+    $minutes = $result->format('%i');
+
+    if ($days == 1) {
+        return date_format($dateRate, "Вчера в H:i");
+    } elseif ($days < 1) {
+        if ($minutes < 1) {
+            return 'Только что';
+        } elseif ($minutes < 60 && $hours < 1) {
+            return $minutes . ' ' . get_noun_plural_form($minutes, 'минуту', 'минуты', 'минут') . ' назад';
+        } elseif ($hours < 24) {
+            return $hours . ' ' . get_noun_plural_form($hours, 'час', 'часа', 'часов') . ' назад';
+        }
+    } else {
+        $date = date_create($date);
+        return date_format($date, "d.m.y в H:i");
     }
 }
 
