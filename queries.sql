@@ -24,7 +24,7 @@ INSERT INTO Users (id, registration_date, user_email, user_name, user_password, 
 INSERT INTO Lots (id, lot_name, create_date, lot_info, image_link, start_price, final_date, step_rate, author, winner, cat_code)
     VALUES (null, '2014 Rossignol District Snowboard', '2020-05-01', 'какой-никакой, а сноуборд', 'img/lot-1.jpg', '10999', '2020-07-30', '100', 1, null, 1);
 INSERT INTO Lots (id, lot_name, create_date, lot_info, image_link, start_price, final_date, step_rate, author, winner, cat_code)
-    VALUES (null, 'DC Ply Mens 2016/2017 Snowboard', '2020-05-02', 'это сноуборд что надо сноуборд', 'img/lot-2.jpg', '159999', '2020-07-31', '50', 3, null, 1);
+    VALUES (null, 'DC Ply Mens 2016/2017 Snowboard', '2020-05-02', 'это сноуборд что надо сноуборд', 'img/lot-2.jpg', '15999', '2020-07-31', '50', 3, null, 1);
 INSERT INTO Lots (id, lot_name, create_date, lot_info, image_link, start_price, final_date, step_rate, author, winner, cat_code)
     VALUES (null, 'Крепления Union Contact Pro 2015 года размер L/XL', '2020-05-03', 'крепёж от бога', 'img/lot-3.jpg', '8000', '2020-08-01', '50', 1, null, 2);
 INSERT INTO Lots (id, lot_name, create_date, lot_info, image_link, start_price, final_date, step_rate, author, winner, cat_code)

@@ -44,7 +44,7 @@ CREATE TABLE Rates (
     id        INTEGER  NOT NULL AUTO_INCREMENT,
     lot_id    INTEGER  NOT NULL,
     user_id   INTEGER  NOT NULL,
-    rate      INTEGER  NOT NULL,
+    rate      INTEGER,
     date_rate DATETIME DEFAULT CURRENT_TIMESTAMP,
 
     FOREIGN KEY (user_id) REFERENCES Users(id),
