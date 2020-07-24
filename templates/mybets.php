@@ -38,6 +38,8 @@
         </tr>
       <?php endforeach; ?>
       </table>
+      <?php else: ?>
+      <p><b><?=$notFound; ?></b></p>
       <?php endif; ?>
     </section>
   </main>
