@@ -21,8 +21,7 @@ $sqlMyRates = "SELECT Lots.id, image_link, lot_name, category, final_date, rate,
                WHERE user_id = {$_SESSION['user']['id']}
                ORDER BY date_rate DESC";
 
-$result = mysqli_query($connect, $sqlMyRates);
-$myRates = mysqli_fetch_all($result, MYSQLI_ASSOC);
+$myRates = getResultAsArray($connect, $sqlMyRates);
 
 if ($myRates) {
     $pageContent = include_template('mybets.php', [

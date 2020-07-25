@@ -24,8 +24,7 @@ if ($_GET['id'] > 0 && $_GET['id'] <= count($categories)) {
                                 WHERE final_date > now()
                                   AND cat_code = {$_GET['id']}";
 
-    $result = mysqli_query($connect, $sqlCountLotsOnCategory);
-    $countLotsOnCategory = mysqli_num_rows($result);
+    $countLotsOnCategory = getNumRows($connect, $sqlCountLotsOnCategory);
 
     $currentPage = $_GET['page'] ?? 1;
     $pageLotsLimit = 9;
@@ -48,8 +47,7 @@ if ($_GET['id'] > 0 && $_GET['id'] <= count($categories)) {
                            LIMIT $pageLotsLimit
                           OFFSET $offset";
 
-    $result = mysqli_query($connect, $sqlLotsByCategory);
-    $items = mysqli_fetch_all($result, MYSQLI_ASSOC);
+    $items = getResultAsArray($connect, $sqlLotsByCategory);
 
     $lots = include_template('lots.php', ['items' => $items, 'notFound' => $notFound]);
 

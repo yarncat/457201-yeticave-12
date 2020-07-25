@@ -14,8 +14,7 @@ $sqlWinners = "SELECT Lots.id lot_id, Users.id user_id, lot_name, user_name, use
                 WHERE final_date < now()
                   AND winner IS NULL";
 
-$result = mysqli_query($connect, $sqlWinners);
-$winners = mysqli_fetch_all($result, MYSQLI_ASSOC);
+$winners = getResultAsArray($connect, $sqlWinners);
 
 foreach ($winners as $winner) {
     $sqlAddWinner = "UPDATE Lots SET winner = {$winner['user_id']}

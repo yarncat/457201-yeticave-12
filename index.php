@@ -19,8 +19,7 @@ $sqlLots = 'SELECT Lots.id, lot_name, image_link, start_price, final_date, rate,
              WHERE final_date > now()
              ORDER BY create_date DESC';
 
-$result = mysqli_query($connect, $sqlLots);
-$items = mysqli_fetch_all($result, MYSQLI_ASSOC);
+$items = getResultAsArray($connect, $sqlLots);
 
 $lots = include_template('lots.php', ['items' => $items, 'notFound' => $notFound]);
 

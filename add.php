@@ -22,6 +22,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $tmpName = $_FILES['image']['tmp_name'];
         $fileType = mime_content_type($tmpName);
         $fileSize = $_FILES['image']['size'];
+
         if ($fileSize > 1000000) {
             $errors['image'] = 'Максимальный размер файла: 2Мб';
         }
@@ -66,8 +67,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     } else {
         $sqlAddLot = "INSERT INTO Lots (lot_name, cat_code, lot_info, start_price, step_rate, final_date, author, image_link)
                       VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
-        $stmt = db_get_prepare_stmt($connect, $sqlAddLot, $lot);
-        $result = mysqli_stmt_execute($stmt);
+
+        $result = getPrepareStmt($connect, $sqlAddLot, $lot);
 
         if ($result) {
             $lotId = mysqli_insert_id($connect);
