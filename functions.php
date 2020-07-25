@@ -1,79 +1,39 @@
 <?php
 
-function include_template($name, array $data = [])
-{
-    $name = 'templates/' . $name;
-    $result = '';
-
-    if (!is_readable($name)) {
-        return $result;
-    }
-
-    ob_start();
-    extract($data);
-    require $name;
-
-    $result = ob_get_clean();
-
-    return $result;
-}
-
+/**
+ * Сохраняет введённые значения в полях формы, переданные методом POST
+ *
+ * @param $name Введённое значение в поле формы
+ *
+ * @return string Возвращаемое значение, если таковое есть в массиве $_POST
+ */
 function getPostVal($name)
 {
     return $_POST[$name] ?? "";
 }
 
-function db_get_prepare_stmt($con, $sql, $data = [])
-{
-    $stmt = mysqli_prepare($con, $sql);
-
-    if ($stmt === false) {
-        $errorMsg = 'Не удалось инициализировать подготовленное выражение: ' . mysqli_error($con);
-        die($errorMsg);
-    }
-
-    if ($data) {
-        $types = '';
-        $stmt_data = [];
-
-        foreach ($data as $value) {
-            $type = 's';
-
-            if (is_int($value)) {
-                $type = 'i';
-            } elseif (is_string($value)) {
-                $type = 's';
-            } elseif (is_double($value)) {
-                $type = 'd';
-            }
-
-            if ($type) {
-                $types .= $type;
-                $stmt_data[] = $value;
-            }
-        }
-
-        $values = array_merge([$stmt, $types], $stmt_data);
-
-        $func = 'mysqli_stmt_bind_param';
-        $func(...$values);
-
-        if (mysqli_errno($con) > 0) {
-            $errorMsg = 'Не удалось связать подготовленное выражение с параметрами: ' . mysqli_error($con);
-            die($errorMsg);
-        }
-    }
-
-    return $stmt;
-}
-
-function formatSum($price, $rubleSign = "")
+/**
+ * Форматирует сумму(цену), разделяя разряды пробелом и добавляя знак валюты
+ *
+ * @param int $price Заданное для форматирования число
+ * @param string $currencySign Знак валюты (соответствующий символ Юникода), опционально
+ *
+ * @return string Целое число с символом валюты, если таковой был указан.
+ */
+function formatSum($price, $currencySign = "")
 {
     $roundSum = ceil($price);
-    $result = number_format($roundSum, 0, ",", " ") . $rubleSign;
+    $result = number_format($roundSum, 0, ",", " ") . $currencySign;
     return $result;
 }
 
+/**
+ * Рассчитывает оставшееся время до конца аукциона в часах и минутах
+ *
+ * @param string $findate Дата окончания аукциона
+ *
+ * @return array Массив, где первое значение - число часов, второе - число минут
+ */
 function getDateRange($findate)
 {
     $endDate = strtotime($findate);
@@ -86,49 +46,32 @@ function getDateRange($findate)
     return $arr;
 }
 
-function get_noun_plural_form(int $number, string $one, string $two, string $many): string
-{
-    $number = (int) $number;
-    $mod10 = $number % 10;
-    $mod100 = $number % 100;
-
-    switch (true) {
-        case ($mod100 >= 11 && $mod100 <= 20):
-            return $many;
-
-        case ($mod10 > 5):
-            return $many;
-
-        case ($mod10 === 1):
-            return $one;
-
-        case ($mod10 >= 2 && $mod10 <= 4):
-            return $two;
-
-        default:
-            return $many;
-    }
-}
-
+/**
+ * Рассчитывает время, которое прошло с момента создания ставки
+ *
+ * @param string $date Дата создания ставки
+ *
+ * @return string Сколько времени назад была сделана ставка
+ */
 function getDifferenceTime($date)
 {
     $dateNow = date("Y-m-d H:i:s");
     $today = date_create($dateNow);
     $dateRate = date_create($date);
-    $result = date_diff($today, $dateRate);
-    $days = $result->format('%d');
-    $hours = $result->format('%h');
-    $minutes = $result->format('%i');
+    $days = $today->format('d') - $dateRate->format('d');
+    $hours = $today->format('h') - $dateRate->format('h');
+    $minutes = $today->format('i') - $dateRate->format('i');
 
     if ($days == 1) {
         return date_format($dateRate, "Вчера в H:i");
     } elseif ($days < 1) {
-        if ($minutes < 1) {
-            return 'Только что';
-        } elseif ($minutes < 60 && $hours < 1) {
-            return $minutes . ' ' . get_noun_plural_form($minutes, 'минуту', 'минуты', 'минут') . ' назад';
-        } elseif ($hours < 24) {
-            return $hours . ' ' . get_noun_plural_form($hours, 'час', 'часа', 'часов') . ' назад';
+        if ($hours === 0) {
+            if ($hours === 0 && $minutes === 0) {
+                return 'Только что';
+            }
+            return $minutes . 'минут' . ' назад';
+        } elseif ($hours > 0) {
+            return $hours . ' часов' . ' назад';
         }
     } else {
         $date = date_create($date);
@@ -136,18 +79,63 @@ function getDifferenceTime($date)
     }
 }
 
-function is_date_valid(string $date): bool
+/**
+ * Получает запрошенные данные из БД
+ *
+ * @param $connect Параметры подключения к базе данных
+ * @param string $sqlQuery SQL-запрос
+ *
+ * @return Возвращает результаты запроса в виде вложенного (двумерного) ассоциативного массива
+ */
+function getResultAsArray($connect, $sqlQuery)
 {
-    $format_to_check = 'Y-m-d';
-    $dateTimeObj = date_create_from_format($format_to_check, $date);
-    if ($dateTimeObj !== false && array_sum(date_get_last_errors()) === 0) {
-        $endTime = (strtotime($date) - strtotime('now')) / 86400;
-        if ($endTime < 1) {
-            return false;
-        } else {
-            return true;
-        }
-    } else {
-        return false;
-    }
+    $result = mysqli_query($connect, $sqlQuery);
+    return mysqli_fetch_all($result, MYSQLI_ASSOC);
+}
+
+/**
+ * Получает запрошенные данные из БД
+ *
+ * @param $connect Параметры подключения к базе данных
+ * @param string $sqlQuery SQL-запрос
+ *
+ * @return int Возвращает результаты запроса в виде числа - количества строк результатов запроса
+ */
+function getNumRows($connect, $sqlQuery)
+{
+    $result = mysqli_query($connect, $sqlQuery);
+    return mysqli_num_rows($result);
+}
+
+/**
+ * Выполняет подготовленный запрос
+ * (для операторов INSERT, UPDATE)
+ *
+ * @param $connect Параметры подключения к базе данных
+ * @param string $sqlQuery SQL-запрос
+ * @param array $array Массив данных
+ *
+ * @return bool Возвращает true в случае успешного завершения, иначе false
+ */
+function getPrepareStmt($connect, $sqlQuery, $array)
+{
+    $stmt = db_get_prepare_stmt($connect, $sqlQuery, $array);
+    return mysqli_stmt_execute($stmt);
+}
+
+/**
+ * Выполняет подготовленный запрос и получает данные запроса
+ * (для оператора SELECT)
+ *
+ * @param $connect Параметры подключения к базе данных
+ * @param string $sqlQuery SQL-запрос
+ * @param array $array Массив данных
+ *
+ * @return Возвращает результат успешно выполненного запроса, иначе false
+ */
+function getResultPrepareStmt($connect, $sqlQuery, $array)
+{
+    $stmt = db_get_prepare_stmt($connect, $sqlQuery, [$array]);
+    mysqli_stmt_execute($stmt);
+    return mysqli_stmt_get_result($stmt);
 }
