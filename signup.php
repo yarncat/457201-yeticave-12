@@ -23,8 +23,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                            FROM users
                           WHERE user_email = '$email'";
 
-        $result = mysqli_query($connect, $sqlUserEmail);
-        if (mysqli_num_rows($result) > 0) {
+        $userEmail = getNumRows($connect, $sqlUserEmail);
+
+        if ($userEmail > 0) {
             $errors['email'] = 'Пользователь с этим email уже зарегистрирован';
         }
     }
@@ -38,11 +39,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     }
 
     if (mb_strlen($signup['name']) > 100) {
-        $errors['lot_name'] = 'Внимание: максимальное количество символов в названии лота: 100';
+        $errors['lot_name'] = 'Внимание! Максимальное количество символов в имени: 100';
     }
 
     if (mb_strlen($signup['contacts']) > 255) {
-        $errors['contacts'] = 'Внимание: максимальное количество символов в описании лота: 255';
+        $errors['contacts'] = 'Внимание! Максимальное количество символов: 255';
     }
 
     if (count($errors)) {
@@ -51,8 +52,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $sqlNewUser = 'INSERT INTO users (user_email, user_password, user_name, user_contacts)
                        VALUES (?, ?, ?, ?)';
 
-        $stmt = db_get_prepare_stmt($connect, $sqlNewUser, $signup);
-        $result = mysqli_stmt_execute($stmt);
+        $result = getPrepareStmt($connect, $sqlNewUser, $signup);
 
         if ($result) {
             header("Location: login.php");

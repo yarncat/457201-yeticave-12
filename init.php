@@ -1,5 +1,6 @@
 <?php
 
+require_once 'helpers.php';
 require_once 'functions.php';
 session_start();
 
@@ -18,8 +19,7 @@ if (isset($_SESSION['user'])) {
 
 $sqlCategories = 'SELECT * FROM Categories';
 
-$result = mysqli_query($connect, $sqlCategories);
-$categories = mysqli_fetch_all($result, MYSQLI_ASSOC);
+$categories = getResultAsArray($connect, $sqlCategories);
 
 $menu = include_template('menu.php', ['categories' => $categories]);
 

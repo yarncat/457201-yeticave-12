@@ -4,27 +4,11 @@ require_once 'init.php';
 
 $title = 'Мои ставки';
 
-$dateNow = date("Y-m-d H:i:s");
-
-$sqlWinners = "SELECT user_id, lot_id
-                 FROM Rates
-                      LEFT JOIN Lots
-                             ON Rates.lot_id = Lots.id
-                WHERE user_id = {$_SESSION['user']['id']}
-                  AND final_date < now()
-                  AND winner IS NULL";
-
-$result = mysqli_query($connect, $sqlWinners);
-$winners = mysqli_fetch_all($result, MYSQLI_ASSOC);
-
-foreach ($winners as $winner) {
-    $sqlAddWinner = "UPDATE Lots SET winner = {$winner['user_id']}
-                      WHERE id = {$winner['lot_id']}";
-    $result = mysqli_query($connect, $sqlAddWinner);
-    if (!$result) {
-        print(mysqli_error($connect));
-    }
+if (!$_SESSION) {
+    header("Location: login.php");
 }
+
+$dateNow = date("Y-m-d H:i:s");
 
 $sqlMyRates = "SELECT Lots.id, image_link, lot_name, category, final_date, rate, date_rate, user_contacts, winner
                 FROM Lots
@@ -37,14 +21,18 @@ $sqlMyRates = "SELECT Lots.id, image_link, lot_name, category, final_date, rate,
                WHERE user_id = {$_SESSION['user']['id']}
                ORDER BY date_rate DESC";
 
-$result = mysqli_query($connect, $sqlMyRates);
-$myRates = mysqli_fetch_all($result, MYSQLI_ASSOC);
+$myRates = getResultAsArray($connect, $sqlMyRates);
 
-$pageContent = include_template('mybets.php', [
-    'menu' => $menu,
-    'myRates' => $myRates,
-    'dateNow' => $dateNow
-]);
+if ($myRates) {
+    $pageContent = include_template('mybets.php', [
+        'menu' => $menu,
+        'myRates' => $myRates,
+        'dateNow' => $dateNow
+    ]);
+} else {
+    $notFound = 'У вас пока ещё нет ставок';
+    $pageContent = include_template('mybets.php', ['menu' => $menu, 'notFound' => $notFound]);
+}
 
 $layoutContent = include_template('layout.php', [
     'menu' => $menu,

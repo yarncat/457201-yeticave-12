@@ -27,9 +27,8 @@ if ($_GET['id'] > 0) {
                              WHERE lot_id = {$_GET['id']}
                              ORDER BY date_rate DESC";
 
-    $result = mysqli_query($connect, $sqlRatesOnLot);
-    $ratesOnLot = mysqli_fetch_all($result, MYSQLI_ASSOC);
-    $countRatesOnLot = mysqli_num_rows($result);
+    $ratesOnLot = getResultAsArray($connect, $sqlRatesOnLot);
+    $countRatesOnLot = getNumRows($connect, $sqlRatesOnLot);
     
     $lastRateUser = $countRatesOnLot ? $ratesOnLot[0]['user_id'] : null;
 
@@ -78,23 +77,23 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                           WHERE user_id = {$_SESSION['user']['id']}
                             AND lot_id = {$_GET['id']}";
 
-        $result = mysqli_query($connect, $sqlCheckRate);
-        $checkRate = mysqli_fetch_all($result, MYSQLI_ASSOC);
-        $countRates = mysqli_num_rows($result);
+        $checkRate = getResultAsArray($connect, $sqlCheckRate);
+        $countRates = getNumRows($connect, $sqlCheckRate);
 
         if ($countRates) {
             $sqlDeleteLastRate = "DELETE
                                     FROM Rates
                                    WHERE lot_id = {$_GET['id']}
                                      AND user_id = {$_SESSION['user']['id']}";
+
             $result = mysqli_query($connect, $sqlDeleteLastRate);
         }
 
         $newRate = [$_GET['id'], $_SESSION['user']['id'], $_POST['cost']];
         $sqlAddRate = 'INSERT INTO Rates (lot_id, user_id, rate)
                        VALUES (?, ?, ?)';
-        $stmt = db_get_prepare_stmt($connect, $sqlAddRate, $newRate);
-        $result = mysqli_stmt_execute($stmt);
+
+        $result = getPrepareStmt($connect, $sqlAddRate, $newRate);
 
         if ($result) {
             header("Location: lot.php?id={$_GET['id']}");

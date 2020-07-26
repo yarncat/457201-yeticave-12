@@ -14,9 +14,7 @@ if ($search) {
                       WHERE MATCH(lot_name, lot_info) AGAINST(?)
                         AND final_date > now()";
 
-    $stmt = db_get_prepare_stmt($connect, $sqlCountLots, [$search]);
-    mysqli_stmt_execute($stmt);
-    $result = mysqli_stmt_get_result($stmt);
+    $result = getResultPrepareStmt($connect, $sqlCountLots, $search);
     $countLots = mysqli_num_rows($result);
 
     $currentPage = $_GET['page'] ?? 1;
@@ -40,9 +38,7 @@ if ($search) {
                    LIMIT $pageItemsLimit
                   OFFSET $offset";
 
-    $stmt = db_get_prepare_stmt($connect, $sqlSearch, [$search]);
-    mysqli_stmt_execute($stmt);
-    $result = mysqli_stmt_get_result($stmt);
+    $result = getResultPrepareStmt($connect, $sqlSearch, $search);
     $items = mysqli_fetch_all($result, MYSQLI_ASSOC);
 
     $lots = include_template('lots.php', ['items' => $items, 'notFound' => $notFound]);
