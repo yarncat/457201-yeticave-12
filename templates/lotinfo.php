@@ -26,14 +26,14 @@
                 <span class="lot-item__cost"><?=isset($lot['rate']) ? formatSum($lot['rate']) : formatSum($lot['start_price']); ?></span>
               </div>
               <div class="lot-item__min-cost">
-                <?php if ($lot['final_date'] > $dateNow):?> Мин. ставка <span><?=isset($lot['rate']) ? formatSum($lot['rate'] + $lot['step_rate']) . ' p' : formatSum($lot['start_price'] + $lot['step_rate']) . ' p'; ?></span><?php endif; ?>
+                <?php if ($lot['final_date'] > $dateNow):?> Мин. ставка <span><?=isset($lot['rate']) ? (formatSum($nextRate) . ' p') : (formatSum($newRate) . ' p'); ?></span><?php endif; ?>
               </div>
             </div>
-			<?php if(isset($_SESSION['user']) && $_SESSION['user']['id'] !== $lot['author'] && $_SESSION['user']['id'] !== $lastRateUser && $lot['final_date'] > $dateNow): ?>
+			<?php if(isset($_SESSION['user']) && ($_SESSION['user']['id'] !== $lot['author']) && ($_SESSION['user']['id'] !== $lastRateUser) && ($lot['final_date'] > $dateNow)): ?>
 			<form class="lot-item__form" action="lot.php?id=<?= $lot['id']; ?>" method="POST" autocomplete="off">
               <p class="lot-item__form-item form__item <?=isset($errors) ? "form__item--invalid" : ""; ?>">
                 <label for="cost">Ваша ставка</label>
-                <input id="cost" type="text" name="cost" placeholder="<?=isset($lot['rate']) ? ($lot['rate'] + $lot['step_rate']) : ($lot['start_price'] + $lot['step_rate']); ?>">
+                <input id="cost" type="text" name="cost" placeholder="<?=isset($lot['rate']) ? $nextRate : $newRate; ?>">
                 <span class="form__error"><?=$errors['cost']; ?></span>
               </p>
               <button type="submit" class="button">Сделать ставку</button>

@@ -23,7 +23,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $fileType = mime_content_type($tmpName);
         $fileSize = $_FILES['image']['size'];
 
-        if ($fileSize > 1000000) {
+        if ($fileSize > 2000000) {
             $errors['image'] = 'Максимальный размер файла: 2Мб';
         }
         if ($fileType === "image/jpeg" || $fileType === "image/png") {

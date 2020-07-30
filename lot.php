@@ -19,6 +19,8 @@ if ($_GET['id'] > 0) {
     $result = mysqli_query($connect, $sqlLotInfo);
     $lot = mysqli_fetch_assoc($result);
     $title = $lot['lot_name'];
+    $nextRate = $lot['rate'] + $lot['step_rate'];
+    $newRate = $lot['start_price'] + $lot['step_rate'];
 
     $sqlRatesOnLot = "SELECT rate, date_rate, lot_id, user_name, user_id
                         FROM Rates
@@ -37,6 +39,8 @@ if ($_GET['id'] > 0) {
             'lot' => $lot,
             'menu' => $menu,
             'dateNow' => $dateNow,
+            'newRate' => $newRate,
+            'nextRate' => $nextRate,
             'ratesOnLot' => $ratesOnLot,
             'lastRateUser' => $lastRateUser,
             'countRatesOnLot' => $countRatesOnLot
@@ -57,7 +61,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $errors['cost'] = 'Введите вашу ставку';
     } elseif ($rate['cost'] && !ctype_digit($rate['cost'])) {
         $errors['cost'] = 'Ставка должна быть не меньше минимальной,  целым числом больше 0';
-    } elseif ($rate['cost'] && $rate['cost'] < $lot['start_price'] + $lot['step_rate'] || $rate['cost'] < $lot['rate'] + $lot['step_rate']) {
+    } elseif ($rate['cost'] && ($rate['cost'] < $newRate || $rate['cost'] < $nextRate)) {
         $errors['cost'] = 'Введите ставку не меньше минимальной указанной';
     }
 
@@ -67,6 +71,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             'menu' => $menu,
             'errors' => $errors,
             'dateNow' => $dateNow,
+            'newRate' => $newRate,
+            'nextRate' => $nextRate,
             'ratesOnLot' => $ratesOnLot,
             'lastRateUser' => $lastRateUser,
             'countRatesOnLot' => $countRatesOnLot

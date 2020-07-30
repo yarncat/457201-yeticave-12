@@ -7,11 +7,11 @@
       </section>
       <?php if (isset($pagesCount) && $pagesCount > 1): ?>
       <ul class="pagination-list">
-        <li class="pagination-item pagination-item-prev"><a href="search.php?search=<?=htmlspecialchars($_GET['search']); ?>&page=<?=($currentPage <= 1) ? $currentPage = 1 : $currentPage - 1; ?>">Назад</a></li>
+        <li class="pagination-item pagination-item-prev"><a href="search.php?search=<?=htmlspecialchars($_GET['search']); ?>&page=<?=($currentPage <= 1) ? 1 : $currentPage - 1; ?>">Назад</a></li>
         <?php foreach ($pages as $page): ?>
         <li class="pagination-item <?=($page === $currentPage) ? "pagination__item--active" : ""; ?>"><a href="search.php?search=<?=htmlspecialchars($_GET['search']); ?>&page=<?=$page;?>"><?=$page;?></a></li>
         <?php endforeach; ?>
-        <li class="pagination-item pagination-item-next"><a href="search.php?search=<?=htmlspecialchars($_GET['search']); ?>&page=<?=($currentPage >= $pagesCount) ? $currentPage = $pagesCount : $currentPage + 1; ?>">Вперед</a></li>
+        <li class="pagination-item pagination-item-next"><a href="search.php?search=<?=htmlspecialchars($_GET['search']); ?>&page=<?=($currentPage >= $pagesCount) ? $pagesCount : $currentPage + 1; ?>">Вперед</a></li>
       </ul>
       <?php endif; ?>
     </div>
