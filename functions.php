@@ -59,7 +59,7 @@ function getDifferenceTime($date)
     $today = date_create($dateNow);
     $dateRate = date_create($date);
     $days = $today->format('d') - $dateRate->format('d');
-    $hours = $today->format('h') - $dateRate->format('h');
+    $hours = $today->format('H') - $dateRate->format('H');
     $minutes = $today->format('i') - $dateRate->format('i');
 
     if ($days == 1) {
@@ -69,14 +69,13 @@ function getDifferenceTime($date)
             if ($hours === 0 && $minutes === 0) {
                 return 'Только что';
             }
-            return $minutes . 'минут' . ' назад';
+            return $minutes . get_noun_plural_form($minutes, ' минуту', ' минуты', ' минут') . ' назад';
         } elseif ($hours > 0) {
-            return $hours . ' часов' . ' назад';
+            return $hours . get_noun_plural_form($hours, ' час', ' часа', ' часов') . ' назад';
         }
-    } else {
-        $date = date_create($date);
-        return date_format($date, "d.m.y в H:i");
     }
+    $date = date_create($date);
+    return date_format($date, "d.m.y в H:i");
 }
 
 /**
