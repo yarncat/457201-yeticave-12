@@ -12,7 +12,7 @@
 
 ---
 
-![yeti-cave](https://github.com/yarncat/YetiCave/tree/master/img/yeti-cave.jpg)  
+![yeti-cave](https://github.com/yarncat/YetiCave/blob/master/img/yeti-cave.png)  
 
 ---
 
