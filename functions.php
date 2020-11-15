@@ -64,7 +64,7 @@ function getDifferenceTime($date)
 
     if ($days == 1) {
         return date_format($dateRate, "Вчера в H:i");
-    } elseif ($days < 1) {
+    } elseif ($days < 1 && $days >= 0) {
         if ($hours === 0) {
             if ($hours === 0 && $minutes === 0) {
                 return 'Только что';

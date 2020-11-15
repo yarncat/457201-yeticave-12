@@ -34,7 +34,7 @@
               <p class="lot-item__form-item form__item <?=isset($errors) ? "form__item--invalid" : ""; ?>">
                 <label for="cost">Ваша ставка</label>
                 <input id="cost" type="text" name="cost" placeholder="<?=isset($lot['rate']) ? $nextRate : $newRate; ?>">
-                <span class="form__error"><?=$errors['cost']; ?></span>
+                <span class="form__error"><?=isset($errors['cost']) ? $errors['cost'] : ""; ?></span>
               </p>
               <button type="submit" class="button">Сделать ставку</button>
             </form>
